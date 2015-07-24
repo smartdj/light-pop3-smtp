@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright © 2008-2015, Sergey Radionov <rsatom_gmail.com>
+* Copyright ?2008-2015, Sergey Radionov <rsatom_gmail.com>
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,8 @@
 #include <SSLByteStream.h>
 #include <Pop3.h>
 
+#include <atlstr.h>
+
 inline std::wstring to_wstring(const std::string& str)
 {
 	const std::string::value_type* s = str.c_str();
@@ -46,19 +48,20 @@ inline std::wstring to_wstring(const std::string& str)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	const std::string    Pop3Server = "pop.gmail.com";
-	const bool           UseSSL     = true;
+	const std::string    Pop3Server = "pop3.lolipop.jp";
+	const bool           UseSSL     = false;
 	const unsigned short Pop3Port   = UseSSL ? 995 : 110;
 
-	const std::string    Pop3User   = "vasya.pupkin@gmail.com";
-	const std::string    Pop3Pass   = "password";
+	const std::string    Pop3User   = "hao@haoxinqing.pupu.jp";
+	const std::string    Pop3Pass   = "123kuaile";
 
 	UseWinSock ws(2, 2);
 	if( !ws )
 		return -1;
 
 	u_long srvr_bin_addr = GetBinAddr(Pop3Server.c_str());
-	if( INADDR_NONE==srvr_bin_addr ) {
+	if( INADDR_NONE==srvr_bin_addr )
+	{
 		return -1;
 	}
 
@@ -73,15 +76,18 @@ int _tmain(int argc, _TCHAR* argv[])
 	AutoCloseSocket CloseSocket(hServerSock);
 
 	int ws_ret = connect(hServerSock, (sockaddr *)&ssock_addr, sizeof(ssock_addr));
-	if( SOCKET_ERROR != ws_ret ) {
+	if( SOCKET_ERROR != ws_ret ) 
+	{
 		AutoShutdownConnection ShutdownConnection(hServerSock, SD_BOTH);
 		std::cout<<"Connected to: "<<Pop3Server<<" port:"<<Pop3Port<<std::endl;
 
-		try{
+		try
+		{
 			LSockByteStream ss(hServerSock);
 			LSSLContext SSLCtx;//in case we will need SSL
 			LSSLByteStream ssls(&ss);//in case we will need SSL
-			if( UseSSL ) {
+			if( UseSSL ) 
+			{
 				SSLCtx.AcquireCredentials();
 				SSLCtx.Handshake(&ss, to_wstring(Pop3Server).c_str() );
 				ssls.SetSSLContext(&SSLCtx);
@@ -101,10 +107,13 @@ int _tmain(int argc, _TCHAR* argv[])
 				std::cout<<"Total messages: "<<MessagesCount<<std::endl<<std::endl;
 				std::vector<char> msg_body;
 				for( unsigned int i=1; i<MessagesCount+1; ++i) {
-					pop3.TOP(i, 0, &msg_body);
+					pop3.TOP(i, 100, &msg_body);
 					msg_body.push_back('\0');
 					std::cout<<"Message #"<<i<<" headers:"<<std::endl;
 					std::cout<<&msg_body[0];
+
+					CStringA aa = &msg_body[0];
+					
 				}
 			}
 

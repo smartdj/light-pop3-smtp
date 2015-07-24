@@ -24,7 +24,7 @@
 *******************************************************************************/
 
 #include "Pop3.h"
-
+#include <algorithm>
 LPop3::LPop3(LByteStream* BS)
 	:m_BS(BS)
 {
